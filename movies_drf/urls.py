@@ -19,10 +19,11 @@ from django.urls import path, include
 from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
-from movies.views import MoviesViewSet
+from movies.views import MoviesViewSet, GenresViewSet
 
 router = routers.DefaultRouter()
 router.register(r'movies', MoviesViewSet)
+router.register('genres', GenresViewSet)
 
 
 urlpatterns = [
