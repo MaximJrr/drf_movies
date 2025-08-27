@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from movies.models import Movie, Genre
+from movies.models import Movie, Genre, Review
 
 
 class MovieSerializer(serializers.ModelSerializer):
@@ -16,4 +16,11 @@ class MovieSerializer(serializers.ModelSerializer):
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = Review
         fields = '__all__'
