@@ -2,9 +2,9 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import Movie, Genre
+from .models import Movie, Genre, Review
 from .permissions import IsSuperUserOrReadOnly
-from .serializers import MovieSerializer, GenreSerializer
+from .serializers import MovieSerializer, GenreSerializer, ReviewSerializer
 
 
 class MoviesViewSet(viewsets.ModelViewSet):
@@ -28,6 +28,29 @@ class MoviesViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data)
 
+    @action(detail=False, methods=['get'])
+    def age_restriction(self, request):
+        age = request.query_params.get('age')
+
+        if not age:
+            return Response({"error": "age query parameter is required"}, status=400)
+
+        movies = Movie.objects.filter(age_restriction=age)
+
+        if not movies.exists():
+            return Response({"error": "no movies found for this age"}, status=404)
+
+        serializer = self.get_serializer(movies, many=True)
+
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def reviews(self, request, pk=None):
+        movie = self.get_object()
+        reviews = Review.objects.filter(movie=movie)
+        serializer = ReviewSerializer(reviews, many=True)
+
+        return Response(serializer.data)
 
 
 class GenresViewSet(viewsets.ModelViewSet):
