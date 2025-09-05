@@ -15,7 +15,7 @@ class Movie(models.Model):
     director = models.ForeignKey("Director", on_delete=models.SET_NULL, null=True,  related_name="movies")
 
     def __str__(self):
-        return self.title
+        return f"{self.pk} | {self.title}"
 
 
 class Genre(models.Model):
