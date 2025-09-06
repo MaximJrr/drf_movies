@@ -20,11 +20,12 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, Sp
 from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
-from movies.views import MoviesViewSet, GenresViewSet
+from movies.views import MoviesViewSet, GenresViewSet, ReviewsViewSet
 
 router = routers.DefaultRouter()
 router.register(r'movies', MoviesViewSet)
-router.register('genres', GenresViewSet)
+router.register(r'genres', GenresViewSet)
+router.register(r'reviews', ReviewsViewSet)
 
 
 urlpatterns = [
