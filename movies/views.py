@@ -1,9 +1,11 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from .models import Movie, Genre, Review
-from .permissions import IsSuperUserOrReadOnly
+from .permissions import IsSuperUserOrReadOnly, IsOwnerOrAdmin
+from rest_framework.permissions import IsAuthenticated
 from .serializers import MovieSerializer, GenreSerializer, ReviewSerializer
 
 
@@ -52,6 +54,21 @@ class MoviesViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data)
 
+    @extend_schema(
+        request=ReviewSerializer,
+        responses=ReviewSerializer,
+    )
+    @action(detail=True, methods=['post'])
+    def add_review(self, request, pk=None):
+        movie = self.get_object()
+        serializer = ReviewSerializer(data=request.data, context={'request': request})
+
+        if serializer.is_valid():
+            serializer.save(user=request.user, movie=movie)
+            return Response(serializer.data, status=201)
+
+        return Response(serializer.errors, status=400)
+
 
 class GenresViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
@@ -67,3 +84,12 @@ class GenresViewSet(viewsets.ModelViewSet):
 
         serializer = MovieSerializer(movies, many=True)
         return Response(serializer.data)
+
+
+class ReviewsViewSet(viewsets.ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    permission_classes = (IsAuthenticated, IsOwnerOrAdmin)
+
+    def get_queryset(self):
+        return Review.objects.filter(user=self.request.user)
