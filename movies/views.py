@@ -3,10 +3,11 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import Movie, Genre, Review
+from .mixins import RelatedMoviesMixin
+from .models import Movie, Genre, Review, Actor, Director
 from .permissions import IsSuperUserOrReadOnly, IsOwnerOrAdmin
 from rest_framework.permissions import IsAuthenticated
-from .serializers import MovieSerializer, GenreSerializer, ReviewSerializer
+from .serializers import MovieSerializer, GenreSerializer, ReviewSerializer, ActorSerializer, DirectorSerializer
 
 
 class MoviesViewSet(viewsets.ModelViewSet):
@@ -73,6 +74,7 @@ class MoviesViewSet(viewsets.ModelViewSet):
 class GenresViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+    permission_classes = (IsSuperUserOrReadOnly,)
 
     @action(detail=True, methods=['get'])
     def movies(self, request, pk):
@@ -93,3 +95,15 @@ class ReviewsViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Review.objects.filter(user=self.request.user)
+
+
+class ActorsViewSet(RelatedMoviesMixin, viewsets.ModelViewSet):
+    queryset = Actor.objects.all()
+    serializer_class = ActorSerializer
+    permission_classes = (IsSuperUserOrReadOnly,)
+
+
+class DirectorsViewSet(RelatedMoviesMixin, viewsets.ModelViewSet):
+    queryset = Director.objects.all()
+    serializer_class = DirectorSerializer
+    permission_classes = (IsSuperUserOrReadOnly,)
