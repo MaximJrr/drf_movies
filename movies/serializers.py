@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from movies.models import Movie, Genre, Review
+from movies.models import Movie, Genre, Review, Actor, Director
 
 
 class MovieSerializer(serializers.ModelSerializer):
@@ -11,6 +11,12 @@ class MovieSerializer(serializers.ModelSerializer):
     def validate_age_restriction(self, value):
         if value < 0 or value > 18:
             raise serializers.ValidationError("please specify age restriction from 0 to 18")
+
+
+class MovieShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Movie
+        fields = ['id', 'title', 'release_date', 'duration', 'rating']
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -26,3 +32,15 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
         fields = '__all__'
         read_only_fields = ['movie']
+
+
+class ActorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Actor
+        fields = '__all__'
+
+
+class DirectorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Director
+        fields = '__all__'
