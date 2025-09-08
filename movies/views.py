@@ -91,6 +91,32 @@ class MoviesViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.errors, status=400)
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="search",
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
+                description="Movie search"
+            )
+        ],
+    )
+    @action(detail=False, methods=['get'])
+    def search_movies(self, request):
+        search = request.query_params.get('search')
+
+        if not search:
+            return Response({"message": "search query parameter is required."}, status=400)
+
+        movies = Movie.objects.filter(title__icontains=search)
+
+        if not movies.exists():
+            return Response({"message": "there are no films with that name"}, status=200)
+
+        serializer = self.get_serializer(movies, many=True)
+
+        return Response(serializer.data)
+
 
 class GenresViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
