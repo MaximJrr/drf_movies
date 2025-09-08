@@ -1,4 +1,5 @@
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -15,6 +16,16 @@ class MoviesViewSet(viewsets.ModelViewSet):
     serializer_class = MovieSerializer
     permission_classes = (IsSuperUserOrReadOnly,)
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="year",
+                type=OpenApiTypes.INT,
+                location=OpenApiParameter.QUERY,
+                description="Year limit for movies"
+            )
+        ],
+    )
     @action(detail=False, methods=['get'])
     def year_release(self, request):
         year = request.query_params.get('year')
@@ -31,6 +42,16 @@ class MoviesViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data)
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="age",
+                type=OpenApiTypes.INT,
+                location=OpenApiParameter.QUERY,
+                description="Age limit for movies"
+            )
+        ],
+    )
     @action(detail=False, methods=['get'])
     def age_restriction(self, request):
         age = request.query_params.get('age')
