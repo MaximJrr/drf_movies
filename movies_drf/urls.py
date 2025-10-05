@@ -21,6 +21,7 @@ from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
 from movies.views import MoviesViewSet, GenresViewSet, ReviewsViewSet, ActorsViewSet, DirectorsViewSet
+from users.views import UserRegisterView, UsersViewSet
 
 router = routers.DefaultRouter()
 router.register(r'movies', MoviesViewSet)
@@ -28,6 +29,7 @@ router.register(r'genres', GenresViewSet)
 router.register(r'reviews', ReviewsViewSet)
 router.register(r'actors', ActorsViewSet)
 router.register(r'directors', DirectorsViewSet)
+router.register(r'users', UsersViewSet)
 
 
 urlpatterns = [
@@ -37,6 +39,9 @@ urlpatterns = [
     path('api/v1/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/v1/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/v1/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    path("register/", UserRegisterView.as_view(), name="register"),
+    path("login/", TokenObtainPairView.as_view(), name="login"),
+    path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     # drf-spectacular
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
